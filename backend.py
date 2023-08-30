@@ -123,30 +123,55 @@ def check_screenshot_match(cat_screen, precision_image, x0, y0, x1, y1):
     # Создание скриншота области экрана
     screenshot = pyautogui.screenshot(region=(x0, y0, x1 - x0, y1 - y0))
     screenshot.save(temp_catalog + '/screenshot.png')
-    img1 = cv2.imread(temp_catalog + '/screenshot.png')
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 
+    # Переходим к сравнению изображений
+
+    # № 1
+    img1 = cv2.imread(temp_catalog + '/screenshot.png')
+    height1, width1, _ = img1.shape
     # Сравнение скриншота с ранее сохраненными
     for filename in os.listdir(save_catalog):
         if filename.endswith('.png'):  # Проверка расширения файла
+            # № 2
             img2 = cv2.imread(os.path.join(save_catalog, filename))
-            img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-            diff = cv2.subtract(img1, img2)
-            # Среднее значение пикселя разности изображений определяет уровень различия
-            # т.е. чем выше "пиксель различия", тем меньше уровень совпадения (от обратного)
-            # поэтому вычитаем пиксель из общей суммы 255
-            # Точность переводим в проценты и сравниваем с поромговым значением "точности совпадения для фильтрации"
-            # если достигаем или превышаем порог, то кидаем рекламу в ЧС,
-            # поэтому низким делать не стоит!
-            mean_pixel = 255 - np.sum(abs(diff)) / float(height * width)
-            real_diff = mean_pixel / 255 * 100
-            if real_diff >= precision_image:
-                return True  # Найдено совпадение
+            height2, width2, _ = img2.shape
 
+            h = min(height1, height2)
+            w = min(width1, width2)
+
+            if check2image(img1, img2, h, w, precision_image):
+                return True
     return False  # Совпадений не найдено
 
+def check2image(img1, img2, height, width, precision_image):
+    real_diff = 0  # Подсчитываем общее кол-во несовпадающих пикселей
+    # Добавим пороговое значение после превышения которого сразу подтверждаем совпадение
+    _all = height * width
+    _maximum = _all * precision_image  # = Общее число пикселей * точность совпадения
 
-def save_or_clear_screenshot(found_chest, cat_screen, x0, y0, x1, y1):
+    for y in range(height):
+        for x in range(width):
+            _ostatok = _all - (y+1)*(x+1)
+            # Считаем модульный разброс по каждой компоненте отдельно, чтобы исключить случаи разных цветов одной интенсивности,
+            # Также добавим округление в 10 раз, чтобы исключить невидимые расхождения для невооруженного взгляда,
+            # т.к. в видеороликах может быть расхождение до 1 секунды между скриншотами из-за разницы в запуске
+            diff_b = int(abs(int(img1[y, x, 0]) - int(img2[y, x, 0])) / 10)
+            diff_g = int(abs(int(img1[y, x, 1]) - int(img2[y, x, 1])) / 10)
+            diff_r = int(abs(int(img1[y, x, 2]) - int(img2[y, x, 2])) / 10)
+            real_diff += 1 if diff_b + diff_g + diff_r == 0 else 0
+
+            # Если даже все оставшиеся пиксели совпадут и мы не превысим порог точности, то сканировать дальше нет смысла
+            # Говорим, что изображение не то, и идем сканировать следующее
+            # Например если порог точности - 80% совпадения, а 30% пикселей уже не совпало, то смысла дальше смотреть нет.
+            if real_diff + _ostatok < _maximum:
+                return False
+            if real_diff >= _maximum:
+                return True
+    return False
+
+
+
+def save_or_clear_screenshot(found_close, cat_screen, x0, y0, x1, y1):
     # Сформируем постфикс к общему каталогу скриншотов, чтобы рассортировать изображения по габаритам
     height = y1 - y0
     width = x1 - x0
@@ -158,13 +183,18 @@ def save_or_clear_screenshot(found_chest, cat_screen, x0, y0, x1, y1):
         os.makedirs(save_catalog)
 
     if os.path.exists(temp_catalog + '/screenshot.png'):  # Проверка наличия файла
-        # Перемещение или удаление скриншота
-        if not found_chest:
+        # Если в прошлой итерации цикла мы не нашли выход, то изображение надо сохранить
+        if not found_close:
             # Генерация уникального имени файла
-            filename = os.path.join(save_catalog, 'screenshot_{}.png'.format(len(os.listdir(save_catalog))))
+            _name = 'screenshot_{}.png'.format(len(os.listdir(save_catalog)))
+            filename = os.path.join(save_catalog, _name)
 
             # Сохранение текущего скриншота
             shutil.move(temp_catalog + '/screenshot.png', filename)
+            return "Изображение сохранено в ЧС под названием: " + _name
         else:
             # Удаление текущего скриншота
             os.remove(temp_catalog + '/screenshot.png')
+            return "Буфер ЧС очищен!"
+
+    return ""

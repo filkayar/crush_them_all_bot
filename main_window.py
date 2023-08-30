@@ -361,9 +361,16 @@ class BotFrame ( wx.Frame ):
 		click_back = self.is_click_back.GetValue()
 		play_path = self.path_play.GetPath()
 		play_zone =self.get_play_zone()
-		precision_image = self.precision_image.GetValue()
+		precision_image = self.precision_image.GetValue() / 100
 
+		# Начинаем с того что сундук мы еще не нашли, а выход из рекламы как будто бы нашли
 		_found_chest = False
+		_found_close = True
+
+		# Чистим буфер черного списка, чтобы не засорять мусором ЧС
+		if os.path.exists(screen_path + '/TEMP/screenshot.png'):
+			os.remove(screen_path + '/TEMP/screenshot.png')
+
 
 		self.set_status("Запуск...")
 		# Запускаем бесконечный цикл
@@ -385,8 +392,12 @@ class BotFrame ( wx.Frame ):
 
 				# Разберемся с прошлым найденным (или не найденным сундуком), добавим рекламу в ЧС либо очистим буфер
 				# От альтернативных попаданий в цикл (отсутствия файла) функция защищена.
-				self.set_status("Чистка буфера изображений...")
-				save_or_clear_screenshot(_found_chest, screen_path, *screen_zone)
+				result_clear = save_or_clear_screenshot(_found_close, screen_path, *screen_zone)
+				if result_clear != "":
+					self.set_status(result_clear)
+
+				# Обновляем метку, что выход найден
+				_found_close = True
 
 				# Гоняем цикл поиска сундуков, от засыпания он защищен и прекратится только если не сможет работать
 				# после засыпания в течение 10 секунд. В этом случае мы выполняем перезагрузку и возвращаемся к началу
@@ -411,6 +422,12 @@ class BotFrame ( wx.Frame ):
 						center_zone=center_zone, precision=precision, event=event
 					)
 			else:
+				# Если не смогли найти выход, то запоминаем это и идем на перезагрузку
+				# после перезагрузки и начала новой итерации по флагу определим что изображение из буфера надо сохранить
+				# Если стоп-сигнал, то на следующую итерацию мы не пойдем, изображение так и останется в буфере
+				# Поэтому мы чистим буфер перед запуском бота
+				_found_close = False
+
 				# Варианты попадания сюда:
 				# 1) Стоп-сигнал
 				# 2) Превышение времени поиска выхода
@@ -506,9 +523,9 @@ class BotFrame ( wx.Frame ):
 
 		self.set_status("Перезапуск приложения...")
 		f_click(ax, ay)
-		time.sleep(1)
+		time.sleep(3)
 		f_click(cx, cy)
-		time.sleep(2)
+		time.sleep(4)
 		f_click(ix, iy)
 		time.sleep(reboot_time)
 
