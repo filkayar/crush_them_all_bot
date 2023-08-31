@@ -396,6 +396,8 @@ class BotFrame ( wx.Frame ):
 				if result_clear != "":
 					self.set_status(result_clear)
 
+				# Считаем, что нашли сундук только если с прошлой итерации остались флаги о нахождении и ВЫХОДА и СУНДУКА
+				self.count_chest += 1 if _found_close and _found_chest else 0
 				# Обновляем метку, что выход найден
 				_found_close = True
 
@@ -476,7 +478,6 @@ class BotFrame ( wx.Frame ):
 	def Find_Chests_loop(self, sleep_time, chest_path, chest_zone, precision, ad_time, menu_path, menu_zone,
 						 tree_chest_path, play_path, play_zone, screen_zone, screen_path, precision_image):
 		self.set_status("Поиск сундуков... Найдено: " + str(self.count_chest))
-		self.count_chest += 1
 
 		# !!! ИЩЕМ !!!
 		_now = time_label()
@@ -547,8 +548,8 @@ class BotFrame ( wx.Frame ):
 		# 3) Вышли в ГО ( хорошая концовка )
 
 		# Вариант №2
-		self.set_status("Ошибка перезапуска...")
 		if not _found_main_screen and self.running:
+			self.set_status("Ошибка перезапуска...")
 			if self.running:
 				self.STOP_handler(event)
 			show_error_dialog("Не удалось выйти в главное окно! Цикл остановлен!")
