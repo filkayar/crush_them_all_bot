@@ -10,7 +10,7 @@ from loger import LogDialog
 from screen import ScreenDialog
 from testing import TestingDialog
 from backend import show_error_dialog, time_label, stopwatch, find_element, find_x, f_click, \
-	open_folder, check_screenshot_match, save_or_clear_screenshot
+	open_folder, check_screenshot_match, save_or_clear_screenshot, save_screenshot
 
 
 class BotFrame ( wx.Frame ):
@@ -308,7 +308,9 @@ class BotFrame ( wx.Frame ):
 		self.operation_in_progress = False
 		self.statusbar.SetStatusText("")
 		self.loger.LOG.SetValue("")
-		self.count_chest = 0
+		# В первом цикле минусим счетчик, т.к. своя специфика
+		self.count_chest = 1
+		self.count_tree_chest = 0
 
 		self.Try_upload_config_default()
 
@@ -368,8 +370,8 @@ class BotFrame ( wx.Frame ):
 		_found_close = True
 
 		# Чистим буфер черного списка, чтобы не засорять мусором ЧС
-		if os.path.exists(screen_path + '/TEMP/screenshot.png'):
-			os.remove(screen_path + '/TEMP/screenshot.png')
+		if os.path.exists(screen_path + '/TEMP/screenshot_0.png'):
+			os.remove(screen_path + '/TEMP/screenshot_0.png')
 
 
 		self.set_status("Запуск...")
@@ -385,19 +387,19 @@ class BotFrame ( wx.Frame ):
 			if self.Find_Close_loop(
 				menu_path=menu_path, end_path=end_path, end_zone=end_zone, menu_zone=menu_zone,
 				x_rad_min=x_rad_min, x_rad_max=x_rad_max, error_time=error_time, exit_zones=exit_zones, wb_lvl=wb_lvl, bx=bx, by=by,
-				precision=precision, click_back=click_back
+				precision=precision, click_back=click_back, screen_path=screen_path, screen_zone=screen_zone
 			):
 				# Варианты попадания сюда:
 				# 1) Вышли в ГО (старт, перезагрузка, окончание рекламы)
 
 				# Разберемся с прошлым найденным (или не найденным сундуком), добавим рекламу в ЧС либо очистим буфер
 				# От альтернативных попаданий в цикл (отсутствия файла) функция защищена.
-				result_clear = save_or_clear_screenshot(_found_close, screen_path, *screen_zone)
+				result_clear = save_or_clear_screenshot(_found_close, screen_path, *screen_zone, ad_time=ad_time)
 				if result_clear != "":
 					self.set_status(result_clear)
 
 				# Считаем, что нашли сундук только если с прошлой итерации остались флаги о нахождении и ВЫХОДА и СУНДУКА
-				self.count_chest += 1 if _found_close and _found_chest else 0
+				self.count_chest += 0 if _found_close and _found_chest else -1
 				# Обновляем метку, что выход найден
 				_found_close = True
 
@@ -446,13 +448,14 @@ class BotFrame ( wx.Frame ):
 
 
 	def Find_Close_loop(self, menu_path, end_path, end_zone, menu_zone, x_rad_min, x_rad_max, error_time, exit_zones, wb_lvl, bx, by,
-						precision, click_back):
+						precision, click_back, screen_path, screen_zone):
 		self.set_status("Поиск выхода...")
 
 		_now = time_label()
 		while stopwatch(_now) < error_time and self.running:
 			# Проверим на главный экран
 			if find_element(menu_path, *menu_zone, precision=precision, click=False):
+				self.set_status(" Успех!", type=1)
 				return True
 
 			time.sleep(2)
@@ -468,6 +471,11 @@ class BotFrame ( wx.Frame ):
 			# Ищем сбор награды при необходимости
 			find_element(end_path, *end_zone, precision=precision, click=True)
 
+		# Сохраним проблемный экран для последующего анализа возникавших ошибок
+		if stopwatch(_now) >= error_time:
+			_screen_error = save_screenshot("ERROR_SCREEN", screen_path, *screen_zone)
+			self.set_status("Выход не обнаружен! Сохранение проблемного экрана: " + _screen_error, type=1)
+
 		return False
 
 
@@ -477,7 +485,7 @@ class BotFrame ( wx.Frame ):
 	# либо уходим в перезагрузку если "назад" не помогает.
 	def Find_Chests_loop(self, sleep_time, chest_path, chest_zone, precision, ad_time, menu_path, menu_zone,
 						 tree_chest_path, play_path, play_zone, screen_zone, screen_path, precision_image):
-		self.set_status("Поиск сундуков... Найдено: " + str(self.count_chest))
+		self.set_status("Поиск сундуков (з:"+ str(self.count_chest) +" д:" + str(self.count_tree_chest) + ") ...")
 
 		# !!! ИЩЕМ !!!
 		_now = time_label()
@@ -487,23 +495,40 @@ class BotFrame ( wx.Frame ):
 			# Это самый долгий цикл в процессе работы и надо постоянно проверять не было ли стоп-сигнала
 			if not self.running:
 				return False
+
 			# Если время таймаута сна истекло, проверим не ушли ли мы с экрана, если да - то идем на перезагрузку
 			# даже если ещё работаем, будем проверять отныне на постоянной основе, пока не уснём или не найдем сундук,
 			# чтобы обнулить таймер
 			if stopwatch(_now) >= sleep_time:
 				if not find_element(menu_path, *menu_zone, precision=precision, click=False):
+					self.set_status("Приложение уснуло, перенаправление на перезагрузку!...")
 					return False
+
 			# Ищем золотой сундук, если находим то кликаем Play, засыпаем на заданный отрезок времени и после завершаем функцию
 			if find_element(chest_path, *chest_zone, precision=precision, click=True):
-				_now = time_label()
+				if stopwatch(_now) > 3:
+					self.count_chest += 1
+					self.set_status("\tЗолотой сундук +1 (" + str(self.count_chest) + ")" )
+
 				# Нашли золото, нажали - подождали секунду - начинаем искать запуск рекламы
-				time.sleep(1)
+				_now = time_label()
+				time.sleep(1.5)
 				_found = find_element(play_path, *play_zone, precision=precision, click=True)
+				time.sleep(3)
+
 
 			if find_element(tree_chest_path, *chest_zone, precision=precision, click=True):
+				if stopwatch(_now) > 3:
+					self.count_tree_chest += 1
+					self.set_status("\tДеревянный сундук +1 (" + str(self.count_tree_chest) + ")" )
 				_now = time_label()
 
+
 		# Если дошли до сюда - значит нашли золото, в любом другом случае - ушли бы к перезагрузке
+		# Пока индикатор воспроизведения не исчезнет продолжаем кликать по нему
+		while _found:
+			_found = find_element(play_path, *play_zone, precision=precision, click=True)
+			time.sleep(3)
 
 		# !!! НАШЛИ ЗОЛОТО !!!
 		self.set_status("Просмотр рекламы...")
@@ -511,7 +536,7 @@ class BotFrame ( wx.Frame ):
 		self.set_status("Проверка черного списка...")
 		# Чтобы не переходить к поиску выхода в безнадежной ситуации, если мы знаем что эта реклама - дерьмо,
 		# сразу сверимся с "черным списком" рекламы и в случае чего отправимся сразу на перезагрузку.
-		if check_screenshot_match(screen_path, precision_image, *screen_zone):
+		if check_screenshot_match(screen_path, precision_image, *screen_zone, ad_time=ad_time):
 			self.set_status("!!! Обнаружено исключение. Перенаправление на перезапуск !!!...")
 			return False
 		return True
@@ -905,6 +930,8 @@ class BotFrame ( wx.Frame ):
 		self.path_center.SetPath("")
 		self.path_play.SetPath("")
 
-	def set_status(self, message, sector=0):
+	def set_status(self, message, sector=0, type=0):
 		self.statusbar.SetStatusText(message, sector)  # Обновляем текстовое сообщение в статус-баре
-		self.loger.LOG.SetValue(self.loger.LOG.GetValue()  + datetime.now().strftime("%H:%M:%S")  + " -: " +  message + "\n")
+
+		_end = "\n" if type == 0 else " "
+		self.loger.LOG.SetValue(self.loger.LOG.GetValue() + _end  + datetime.now().strftime("%H:%M:%S")  + " -: " +  message )

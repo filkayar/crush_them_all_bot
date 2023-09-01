@@ -35,8 +35,6 @@ def find_element(image_path, x0, y0, x1, y1, precision=0.8, click=True):
         return True
     return False
 
-
-
 def show_error_dialog(message):
     # app = wx.App()
     # Создание модального окна с сообщением об ошибке
@@ -106,40 +104,27 @@ def open_folder(directory):
         show_error_dialog(f"Ошибка при открытии каталога: {str(e)}")
 
 
-def check_screenshot_match(cat_screen, precision_image, x0, y0, x1, y1):
+def check_screenshot_match(cat_screen, precision_image, x0, y0, x1, y1, ad_time):
     # Сформируем постфикс к общему каталогу скриншотов, чтобы рассортировать изображения по габаритам
     height = y1 - y0
     width = x1 - x0
-    temp_catalog = cat_screen + "/TEMP"
-    save_catalog = cat_screen + "/" + str(height) + "_x_" + str(width)
-
+    save_catalog = cat_screen + "/" + str(height) + "_x_" + str(width) + "_time_" + str(ad_time)
 
     # Проверка наличия каталога и его создание
     if not os.path.exists(save_catalog):
         os.makedirs(save_catalog)
-    if not os.path.exists(temp_catalog):
-        os.makedirs(temp_catalog)
 
     # Создание скриншота области экрана
-    screenshot = pyautogui.screenshot(region=(x0, y0, x1 - x0, y1 - y0))
-    screenshot.save(temp_catalog + '/screenshot.png')
+
+    # Создание скриншота области экрана
+    img1 = cv2.imread(cat_screen + '/TEMP/' + save_screenshot("TEMP", cat_screen, x0, y0, x1, y1))
 
     # Переходим к сравнению изображений
-
-    # № 1
-    img1 = cv2.imread(temp_catalog + '/screenshot.png')
-    height1, width1, _ = img1.shape
-    # Сравнение скриншота с ранее сохраненными
     for filename in os.listdir(save_catalog):
         if filename.endswith('.png'):  # Проверка расширения файла
-            # № 2
             img2 = cv2.imread(os.path.join(save_catalog, filename))
-            height2, width2, _ = img2.shape
 
-            h = min(height1, height2)
-            w = min(width1, width2)
-
-            if check2image(img1, img2, h, w, precision_image):
+            if check2image(img1, img2, height, width, precision_image):
                 return True
     return False  # Совпадений не найдено
 
@@ -170,19 +155,18 @@ def check2image(img1, img2, height, width, precision_image):
     return False
 
 
-
-def save_or_clear_screenshot(found_close, cat_screen, x0, y0, x1, y1):
+def save_or_clear_screenshot(found_close, cat_screen, x0, y0, x1, y1, ad_time):
     # Сформируем постфикс к общему каталогу скриншотов, чтобы рассортировать изображения по габаритам
     height = y1 - y0
     width = x1 - x0
     temp_catalog = cat_screen + "/TEMP"
-    save_catalog = cat_screen + "/" + str(height) + "_x_" + str(width)
+    save_catalog = cat_screen + "/" + str(height) + "_x_" + str(width) + "_time_" + str(ad_time)
 
     # Проверка наличия каталога и его создание
     if not os.path.exists(save_catalog):
         os.makedirs(save_catalog)
 
-    if os.path.exists(temp_catalog + '/screenshot.png'):  # Проверка наличия файла
+    if os.path.exists(temp_catalog + '/screenshot_0.png'):  # Проверка наличия файла
         # Если в прошлой итерации цикла мы не нашли выход, то изображение надо сохранить
         if not found_close:
             # Генерация уникального имени файла
@@ -190,11 +174,27 @@ def save_or_clear_screenshot(found_close, cat_screen, x0, y0, x1, y1):
             filename = os.path.join(save_catalog, _name)
 
             # Сохранение текущего скриншота
-            shutil.move(temp_catalog + '/screenshot.png', filename)
+            shutil.move(temp_catalog + '/screenshot_0.png', filename)
             return "Изображение сохранено в ЧС под названием: " + _name
         else:
             # Удаление текущего скриншота
-            os.remove(temp_catalog + '/screenshot.png')
+            os.remove(temp_catalog + '/screenshot_0.png')
             return "Буфер ЧС очищен!"
 
     return ""
+
+
+def save_screenshot(postfix, cat_screen, x0, y0, x1, y1):
+    # Сформируем постфикс к общему каталогу скриншотов, чтобы рассортировать изображения по габаритам
+    height = y1 - y0
+    width = x1 - x0
+    save_catalog = cat_screen + "/" + postfix
+    if not os.path.exists(save_catalog):
+        os.makedirs(save_catalog)
+
+    _name = 'screenshot_{}.png'.format(len(os.listdir(save_catalog)))
+
+    screenshot = pyautogui.screenshot(region=(x0, y0, width, height))
+    screenshot.save(save_catalog + "/" + _name)
+
+    return _name
