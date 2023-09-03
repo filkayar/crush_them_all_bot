@@ -7,13 +7,17 @@ import mouse
 class ScreenDialog ( wx.Dialog ):
 
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE|wx.VSCROLL )
 
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		self.SetSizeHints( wx.DefaultSize, wx.Size( -1,-1 ) )
 
-		SD_container = wx.FlexGridSizer( 0, 1, 0, 0 )
+		SD_container = wx.FlexGridSizer( 0, 2, 0, 0 )
 		SD_container.SetFlexibleDirection( wx.BOTH )
 		SD_container.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+
+		fgSizer10 = wx.FlexGridSizer( 0, 1, 0, 0 )
+		fgSizer10.SetFlexibleDirection( wx.BOTH )
+		fgSizer10.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
 		screen_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -43,10 +47,10 @@ class ScreenDialog ( wx.Dialog ):
 		screen_block.Add( screen_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( screen_block, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( screen_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline17 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline17, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer10.Add( self.m_staticline17, 0, wx.EXPAND |wx.ALL, 5 )
 
 		exit_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -109,10 +113,10 @@ class ScreenDialog ( wx.Dialog ):
 		exit_block.Add( sbSizer1, 1, wx.EXPAND, 5 )
 
 
-		SD_container.Add( exit_block, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( exit_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline1 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline1, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer10.Add( self.m_staticline1, 0, wx.EXPAND |wx.ALL, 5 )
 
 		chest_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -142,10 +146,10 @@ class ScreenDialog ( wx.Dialog ):
 		chest_block.Add( chest_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( chest_block, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( chest_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline18 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline18, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer10.Add( self.m_staticline18, 0, wx.EXPAND |wx.ALL, 5 )
 
 		chest_block1 = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -175,10 +179,10 @@ class ScreenDialog ( wx.Dialog ):
 		chest_block1.Add( chest3_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( chest_block1, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( chest_block1, 1, wx.EXPAND, 5 )
 
 		self.m_staticline11 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline11, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer10.Add( self.m_staticline11, 0, wx.EXPAND |wx.ALL, 5 )
 
 		play_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -208,10 +212,10 @@ class ScreenDialog ( wx.Dialog ):
 		play_block.Add( play_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( play_block, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( play_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline111 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline111, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer10.Add( self.m_staticline111, 0, wx.EXPAND |wx.ALL, 5 )
 
 		end_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -241,10 +245,10 @@ class ScreenDialog ( wx.Dialog ):
 		end_block.Add( end_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( end_block, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( end_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline12 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline12, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer10.Add( self.m_staticline12, 0, wx.EXPAND |wx.ALL, 5 )
 
 		check_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -274,10 +278,14 @@ class ScreenDialog ( wx.Dialog ):
 		check_block.Add( check_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( check_block, 1, wx.EXPAND, 5 )
+		fgSizer10.Add( check_block, 1, wx.EXPAND, 5 )
 
-		self.m_staticline13 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline13, 0, wx.EXPAND |wx.ALL, 5 )
+
+		SD_container.Add( fgSizer10, 1, wx.EXPAND, 5 )
+
+		fgSizer11 = wx.FlexGridSizer( 0, 1, 0, 0 )
+		fgSizer11.SetFlexibleDirection( wx.BOTH )
+		fgSizer11.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
 		icon_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -294,17 +302,17 @@ class ScreenDialog ( wx.Dialog ):
 		self.iz_x = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
 		icon_coord.Add( self.iz_x, 0, wx.ALL|wx.EXPAND, 5 )
 
-		self.iz_y = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		self.iz_y = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 4 )
 		icon_coord.Add( self.iz_y, 0, wx.ALL|wx.EXPAND, 5 )
 
 
 		icon_block.Add( icon_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( icon_block, 1, wx.EXPAND, 5 )
+		fgSizer11.Add( icon_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline14 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline14, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer11.Add( self.m_staticline14, 0, wx.EXPAND |wx.ALL, 5 )
 
 		BACK_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -328,10 +336,10 @@ class ScreenDialog ( wx.Dialog ):
 		BACK_block.Add( BACK_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( BACK_block, 1, wx.EXPAND, 5 )
+		fgSizer11.Add( BACK_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline15 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline15, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer11.Add( self.m_staticline15, 0, wx.EXPAND |wx.ALL, 5 )
 
 		APPS_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -355,10 +363,10 @@ class ScreenDialog ( wx.Dialog ):
 		APPS_block.Add( APPS_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( APPS_block, 1, wx.EXPAND, 5 )
+		fgSizer11.Add( APPS_block, 1, wx.EXPAND, 5 )
 
 		self.m_staticline16 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		SD_container.Add( self.m_staticline16, 0, wx.EXPAND |wx.ALL, 5 )
+		fgSizer11.Add( self.m_staticline16, 0, wx.EXPAND |wx.ALL, 5 )
 
 		CLEAR_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -382,7 +390,142 @@ class ScreenDialog ( wx.Dialog ):
 		CLEAR_block.Add( CLEAR_coord, 1, wx.ALIGN_CENTER, 5 )
 
 
-		SD_container.Add( CLEAR_block, 1, wx.EXPAND, 5 )
+		fgSizer11.Add( CLEAR_block, 1, wx.EXPAND, 5 )
+
+		self.m_staticline163 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		fgSizer11.Add( self.m_staticline163, 0, wx.EXPAND |wx.ALL, 5 )
+
+		boost1_block = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText1231 = wx.StaticText( self, wx.ID_ANY, u"БУСТЕР - флаг", wx.DefaultPosition, wx.Size( 300,-1 ), 0 )
+		self.m_staticText1231.Wrap( -1 )
+
+		boost1_block.Add( self.m_staticText1231, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+		self.set_boost_flag_zone = wx.Button( self, wx.ID_ANY, u"SET", wx.DefaultPosition, wx.DefaultSize, 0 )
+		boost1_block.Add( self.set_boost_flag_zone, 0, wx.ALL|wx.EXPAND, 5 )
+
+		boost1_coord = wx.GridSizer( 2, 2, 0, 0 )
+
+		self.bstz1_x0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost1_coord.Add( self.bstz1_x0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz1_y0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost1_coord.Add( self.bstz1_y0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz1_x1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost1_coord.Add( self.bstz1_x1, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz1_y1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost1_coord.Add( self.bstz1_y1, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		boost1_block.Add( boost1_coord, 1, wx.ALIGN_CENTER, 5 )
+
+
+		fgSizer11.Add( boost1_block, 1, wx.EXPAND, 5 )
+
+		self.m_staticline161 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		fgSizer11.Add( self.m_staticline161, 0, wx.EXPAND |wx.ALL, 5 )
+
+		boost2_block = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText1232 = wx.StaticText( self, wx.ID_ANY, u"БУСТЕР - получить", wx.DefaultPosition, wx.Size( 300,-1 ), 0 )
+		self.m_staticText1232.Wrap( -1 )
+
+		boost2_block.Add( self.m_staticText1232, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+		self.set_boost_get_zone = wx.Button( self, wx.ID_ANY, u"SET", wx.DefaultPosition, wx.DefaultSize, 0 )
+		boost2_block.Add( self.set_boost_get_zone, 0, wx.ALL|wx.EXPAND, 5 )
+
+		boost2_coord = wx.GridSizer( 2, 2, 0, 0 )
+
+		self.bstz2_x0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost2_coord.Add( self.bstz2_x0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz2_y0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost2_coord.Add( self.bstz2_y0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz2_x1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost2_coord.Add( self.bstz2_x1, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz2_y1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost2_coord.Add( self.bstz2_y1, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		boost2_block.Add( boost2_coord, 1, wx.ALIGN_CENTER, 5 )
+
+
+		fgSizer11.Add( boost2_block, 1, wx.EXPAND, 5 )
+
+		self.m_staticline162 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		fgSizer11.Add( self.m_staticline162, 0, wx.EXPAND |wx.ALL, 5 )
+
+		boost3_block = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText1233 = wx.StaticText( self, wx.ID_ANY, u"БУСТЕР - ок", wx.DefaultPosition, wx.Size( 300,-1 ), 0 )
+		self.m_staticText1233.Wrap( -1 )
+
+		boost3_block.Add( self.m_staticText1233, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+		self.set_boost_ok_zone = wx.Button( self, wx.ID_ANY, u"SET", wx.DefaultPosition, wx.DefaultSize, 0 )
+		boost3_block.Add( self.set_boost_ok_zone, 0, wx.ALL|wx.EXPAND, 5 )
+
+		boost3_coord = wx.GridSizer( 2, 2, 0, 0 )
+
+		self.bstz3_x0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost3_coord.Add( self.bstz3_x0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz3_y0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost3_coord.Add( self.bstz3_y0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz3_x1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost3_coord.Add( self.bstz3_x1, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz3_y1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost3_coord.Add( self.bstz3_y1, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		boost3_block.Add( boost3_coord, 1, wx.ALIGN_CENTER, 5 )
+
+
+		fgSizer11.Add( boost3_block, 1, wx.EXPAND, 5 )
+
+		self.m_staticline13 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		fgSizer11.Add( self.m_staticline13, 0, wx.EXPAND |wx.ALL, 5 )
+
+		boost4_block = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText12331 = wx.StaticText( self, wx.ID_ANY, u"БУСТЕР - закрыть", wx.DefaultPosition, wx.Size( 300,-1 ), 0 )
+		self.m_staticText12331.Wrap( -1 )
+
+		boost4_block.Add( self.m_staticText12331, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+		self.set_boost_end_zone = wx.Button( self, wx.ID_ANY, u"SET", wx.DefaultPosition, wx.DefaultSize, 0 )
+		boost4_block.Add( self.set_boost_end_zone, 0, wx.ALL|wx.EXPAND, 5 )
+
+		boost4_coord = wx.GridSizer( 2, 2, 0, 0 )
+
+		self.bstz4_x0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost4_coord.Add( self.bstz4_x0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz4_y0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost4_coord.Add( self.bstz4_y0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz4_x1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost4_coord.Add( self.bstz4_x1, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.bstz4_y1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		boost4_coord.Add( self.bstz4_y1, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		boost4_block.Add( boost4_coord, 1, wx.ALIGN_CENTER, 5 )
+
+
+		fgSizer11.Add( boost4_block, 1, wx.EXPAND, 5 )
+
+
+		SD_container.Add( fgSizer11, 1, wx.EXPAND, 5 )
 
 
 		self.SetSizer( SD_container )
@@ -404,6 +547,10 @@ class ScreenDialog ( wx.Dialog ):
 		self.set_BACK.Bind( wx.EVT_BUTTON, self.SetZone_BACK )
 		self.set_APPS.Bind( wx.EVT_BUTTON, self.SetZone_APPS )
 		self.set_CLEAR.Bind( wx.EVT_BUTTON, self.SetZone_CLEAR )
+		self.set_boost_flag_zone.Bind( wx.EVT_BUTTON, self.SetZone_boost_flag )
+		self.set_boost_get_zone.Bind( wx.EVT_BUTTON, self.SetZone_boost_get )
+		self.set_boost_ok_zone.Bind( wx.EVT_BUTTON, self.SetZone_boost_ok )
+		self.set_boost_end_zone.Bind( wx.EVT_BUTTON, self.SetZone_boost_end )
 
 
 		self.parent = parent
@@ -467,6 +614,70 @@ class ScreenDialog ( wx.Dialog ):
 			elif self.counter == 1:
 				self.ct3z_x1.SetValue(x)
 				self.ct3z_y1.SetValue(y)
+				mouse.unhook_all()
+			self.counter += 1
+
+		mouse.on_click(on_click)
+
+	def SetZone_boost_flag( self, event ):
+		self.counter = 0
+
+		def on_click():
+			x, y = mouse.get_position()
+			if self.counter == 0:
+				self.bstz1_x0.SetValue(x)
+				self.bstz1_y0.SetValue(y)
+			elif self.counter == 1:
+				self.bstz1_x1.SetValue(x)
+				self.bstz1_y1.SetValue(y)
+				mouse.unhook_all()
+			self.counter += 1
+
+		mouse.on_click(on_click)
+
+	def SetZone_boost_get( self, event ):
+		self.counter = 0
+
+		def on_click():
+			x, y = mouse.get_position()
+			if self.counter == 0:
+				self.bstz2_x0.SetValue(x)
+				self.bstz2_y0.SetValue(y)
+			elif self.counter == 1:
+				self.bstz2_x1.SetValue(x)
+				self.bstz2_y1.SetValue(y)
+				mouse.unhook_all()
+			self.counter += 1
+
+		mouse.on_click(on_click)
+
+	def SetZone_boost_ok( self, event ):
+		self.counter = 0
+
+		def on_click():
+			x, y = mouse.get_position()
+			if self.counter == 0:
+				self.bstz3_x0.SetValue(x)
+				self.bstz3_y0.SetValue(y)
+			elif self.counter == 1:
+				self.bstz3_x1.SetValue(x)
+				self.bstz3_y1.SetValue(y)
+				mouse.unhook_all()
+			self.counter += 1
+
+		mouse.on_click(on_click)
+
+	def SetZone_boost_end( self, event ):
+		self.counter = 0
+
+		def on_click():
+			x, y = mouse.get_position()
+			if self.counter == 0:
+				self.bstz4_x0.SetValue(x)
+				self.bstz4_y0.SetValue(y)
+			elif self.counter == 1:
+				self.bstz4_x1.SetValue(x)
+				self.bstz4_y1.SetValue(y)
 				mouse.unhook_all()
 			self.counter += 1
 
