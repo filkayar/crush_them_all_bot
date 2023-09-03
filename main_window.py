@@ -111,6 +111,14 @@ class BotFrame ( wx.Frame ):
 
 		setting_values_container.Add( self.m_staticText61111, wx.GBPosition( 8, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
+		self.is_find_chest3 = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		setting_values_container.Add( self.is_find_chest3, wx.GBPosition( 9, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL, 5 )
+
+		self.m_staticText61112 = wx.StaticText( self, wx.ID_ANY, u"- Собирать крылатые сундуки", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText61112.Wrap( -1 )
+
+		setting_values_container.Add( self.m_staticText61112, wx.GBPosition( 9, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+
 
 		left_container.Add( setting_values_container, 1, wx.SHAPED, 5 )
 
@@ -189,6 +197,19 @@ class BotFrame ( wx.Frame ):
 
 
 		right_container.Add( path_tree_chest_block, 1, wx.EXPAND, 0 )
+
+		path_chest3_block = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.path_chest3 = wx.FilePickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
+		path_chest3_block.Add( self.path_chest3, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+		self.m_staticText2711 = wx.StaticText( self, wx.ID_ANY, u"Крылатый сундук с золотом", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.m_staticText2711.Wrap( -1 )
+
+		path_chest3_block.Add( self.m_staticText2711, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+
+		right_container.Add( path_chest3_block, 1, wx.EXPAND, 5 )
 
 		path_check_block = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -312,6 +333,7 @@ class BotFrame ( wx.Frame ):
 		# На старте счетчики должны быть нулевыми
 		self.count_chest = 0
 		self.count_tree_chest = 0
+		self.count_chest3 = 0
 
 		self.Try_upload_config_default()
 
@@ -365,10 +387,14 @@ class BotFrame ( wx.Frame ):
 		play_path = self.path_play.GetPath()
 		play_zone =self.get_play_zone()
 		precision_image = self.precision_image.GetValue() / 100
+		chest3_zone = self.get_chest3_zone()
+		chest3_path = self.path_chest3.GetPath()
+		is_find_chest3 = self.is_find_chest3.GetValue()
 
 		# Начинаем с того что сундук мы еще не нашли, а выход из рекламы как будто бы нашли
 		_found_chest = False
 		_found_close = True
+		self.found_chest3 = False
 
 		# Чистим буфер черного списка, чтобы не засорять мусором ЧС
 		if os.path.exists(screen_path + '/TEMP/screenshot_0.png'):
@@ -400,7 +426,14 @@ class BotFrame ( wx.Frame ):
 					self.set_status(result_clear)
 
 				# Считаем найденным сундук, если find_chest его нашел и был найден выход (в отличие от первой итерации)
-				self.count_chest += 1 if _found_close and _found_chest else 0
+				self.count_chest += 1 if _found_close and _found_chest and not self.found_chest3 else 0
+
+				# Признаки нахождение крылатого сундука идентичны обычному золотому,
+				# Поэтому, чтобы разделить счетчики, добавим разделяющий флаг
+				self.count_chest3 += 1 if _found_close and _found_chest and self.found_chest3 else 0
+				self.found_chest3 = False
+
+
 				# Обновляем метку, что выход найден
 				_found_close = True
 
@@ -411,7 +444,8 @@ class BotFrame ( wx.Frame ):
 					sleep_time=sleep_time, chest_path=chest_path, chest_zone=chest_zone, precision=precision,
 					ad_time=ad_time, menu_path=menu_path, menu_zone=menu_zone, tree_chest_path=tree_chest_path,
 					play_path=play_path, play_zone=play_zone, screen_path=screen_path, screen_zone=screen_zone,
-					precision_image=precision_image
+					precision_image=precision_image, is_find_chest3=is_find_chest3, chest3_path=chest3_path,
+					chest3_zone=chest3_zone
 				)
 				if not _found_chest:
 					# Плохой выход может быть в следующих случаях:
@@ -485,11 +519,11 @@ class BotFrame ( wx.Frame ):
 	# требуется проверять заново что мы в главном экране и если это не так, то жмем "назад" пока не выйдем в главное меню для продолжения работы,
 	# либо уходим в перезагрузку если "назад" не помогает.
 	def Find_Chests_loop(self, sleep_time, chest_path, chest_zone, precision, ad_time, menu_path, menu_zone,
-						 tree_chest_path, play_path, play_zone, screen_zone, screen_path, precision_image):
-		self.set_status("Поиск сундуков (з:"+ str(self.count_chest) +" д:" + str(self.count_tree_chest) + ") ...")
+						 tree_chest_path, play_path, play_zone, screen_zone, screen_path, precision_image, is_find_chest3, chest3_path, chest3_zone):
+		self.set_status("Поиск сундуков (з:"+ str(self.count_chest) +" д:" + str(self.count_tree_chest) +" к:" + str(self.count_chest3) + ") ...")
 
 		# !!! ИЩЕМ !!!
-		_now = time_label()
+		_start_find_chests = _now = time_label()
 		_found = False
 
 		while not _found:
@@ -507,7 +541,7 @@ class BotFrame ( wx.Frame ):
 
 			# Ищем золотой сундук, если находим то кликаем Play, засыпаем на заданный отрезок времени и после завершаем функцию
 			if find_element(chest_path, *chest_zone, precision=precision, click=True):
-				if stopwatch(_now) > 3:
+				if stopwatch(_now) > 3 or _start_find_chests < 3.1:
 					# Индикация аналогична предыдущей, только значение отображаем как +1 на опережение
 					# т.е. на ЧС мы увидим 1 найденный сундук, но и на следующем мы увидим 1
 					self.set_status("\tЗолотой сундук +1 (" + str(self.count_chest + 1) + ")")
@@ -520,11 +554,24 @@ class BotFrame ( wx.Frame ):
 
 
 			if find_element(tree_chest_path, *chest_zone, precision=precision, click=True):
-				if stopwatch(_now) > 3:
+				if stopwatch(_now) > 3 or _start_find_chests < 3.1:
 					self.count_tree_chest += 1
 					self.set_status("\tДеревянный сундук +1 (" + str(self.count_tree_chest) + ")" )
 				_now = time_label()
 
+			# Копируем функцию поиска золотого сундука с поправкой, что это опционально
+			if is_find_chest3:
+				if find_element(chest3_path, *chest3_zone, precision=precision, click=True):
+					if stopwatch(_now) > 3 or _start_find_chests < 3.1:
+						# Индикация аналогична предыдущей, только значение отображаем как +1 на опережение
+						# т.е. на ЧС мы увидим 1 найденный сундук, но и на следующем мы увидим 1
+						self.set_status("\tКрылатый сундук +1 (" + str(self.count_chest3 + 1) + ")")
+						self.found_chest3 = True
+					# Нашли золото, нажали - подождали секунду - начинаем искать запуск рекламы
+					_now = time_label()
+					time.sleep(1.5)
+					_found = find_element(play_path, *play_zone, precision=precision, click=True)
+					time.sleep(3)
 
 		# Если дошли до сюда - значит нашли золото, в любом другом случае - ушли бы к перезагрузке
 		# Пока индикатор воспроизведения не исчезнет продолжаем кликать по нему
@@ -623,6 +670,11 @@ class BotFrame ( wx.Frame ):
 			config.set("Settings", "ctz_x1", str(self.screen_d.ctz_x1.GetValue()))
 			config.set("Settings", "ctz_y1", str(self.screen_d.ctz_y1.GetValue()))
 
+			config.set("Settings", "ct3z_x0", str(self.screen_d.ct3z_x0.GetValue()))
+			config.set("Settings", "ct3z_y0", str(self.screen_d.ct3z_y0.GetValue()))
+			config.set("Settings", "ct3z_x1", str(self.screen_d.ct3z_x1.GetValue()))
+			config.set("Settings", "ct3z_y1", str(self.screen_d.ct3z_y1.GetValue()))
+
 			config.set("Settings", "pz_x0", str(self.screen_d.pz_x0.GetValue()))
 			config.set("Settings", "pz_y0", str(self.screen_d.pz_y0.GetValue()))
 			config.set("Settings", "pz_x1", str(self.screen_d.pz_x1.GetValue()))
@@ -659,10 +711,12 @@ class BotFrame ( wx.Frame ):
 			config.set("Settings", "reboot_time", str(self.reboot_time.GetValue()))
 			config.set("Settings", "sleep_time", str(self.sleep_time.GetValue()))
 			config.set("Settings", "is_click_back", "1" if self.is_click_back.GetValue() else "0")
+			config.set("Settings", "is_find_chest3", "1" if self.is_find_chest3.GetValue() else "0")
 			config.set("Settings", "precision_image", str(self.precision_image.GetValue()))
 
 			config.set("Settings", "path_cat_screen", self.path_cat_screen.GetPath())
 			config.set("Settings", "path_chest", self.path_chest.GetPath())
+			config.set("Settings", "path_chest3", self.path_chest3.GetPath())
 			config.set("Settings", "path_tree_chest", self.path_tree_chest.GetPath())
 			config.set("Settings", "path_check", self.path_check.GetPath())
 			config.set("Settings", "path_end", self.path_end.GetPath())
@@ -712,6 +766,15 @@ class BotFrame ( wx.Frame ):
 				self.screen_d.ctz_x1.SetValue(config.getint("Settings", "ctz_x1"))
 			if config.has_option('Settings', 'ctz_y1'):
 				self.screen_d.ctz_y1.SetValue(config.getint("Settings", "ctz_y1"))
+
+			if config.has_option('Settings', 'ct3z_x0'):
+				self.screen_d.ct3z_x0.SetValue(config.getint("Settings", "ct3z_x0"))
+			if config.has_option('Settings', 'ct3z_y0'):
+				self.screen_d.ct3z_y0.SetValue(config.getint("Settings", "ct3z_y0"))
+			if config.has_option('Settings', 'ct3z_x1'):
+				self.screen_d.ct3z_x1.SetValue(config.getint("Settings", "ct3z_x1"))
+			if config.has_option('Settings', 'ct3z_y1'):
+				self.screen_d.ct3z_y1.SetValue(config.getint("Settings", "ct3z_y1"))
 
 			if config.has_option('Settings', 'pz_x0'):
 				self.screen_d.pz_x0.SetValue(config.getint("Settings", "pz_x0"))
@@ -780,11 +843,15 @@ class BotFrame ( wx.Frame ):
 				self.precision_image.SetValue(config.getint("Settings", "precision_image"))
 			if config.has_option('Settings', 'is_click_back'):
 				self.is_click_back.SetValue(True if config.getint("Settings", "is_click_back") == 1 else False)
+			if config.has_option('Settings', 'is_find_chest3'):
+				self.is_find_chest3.SetValue(True if config.getint("Settings", "is_find_chest3") == 1 else False)
 
 			if config.has_option('Settings', 'path_cat_screen'):
 				self.path_cat_screen.SetPath(config.get("Settings", "path_cat_screen"))
 			if config.has_option('Settings', 'path_chest'):
 				self.path_chest.SetPath(config.get("Settings", "path_chest"))
+			if config.has_option('Settings', 'path_chest3'):
+				self.path_chest3.SetPath(config.get("Settings", "path_chest3"))
 			if config.has_option('Settings', 'path_tree_chest'):
 				self.path_tree_chest.SetPath(config.get("Settings", "path_tree_chest"))
 			if config.has_option('Settings', 'path_check'):
@@ -854,6 +921,13 @@ class BotFrame ( wx.Frame ):
 		y1 = self.screen_d.ctz_y1.GetValue()
 		return (x0, y0, x1, y1)
 
+	def get_chest3_zone(self):
+		x0 = self.screen_d.ct3z_x0.GetValue()
+		y0 = self.screen_d.ct3z_y0.GetValue()
+		x1 = self.screen_d.ct3z_x1.GetValue()
+		y1 = self.screen_d.ct3z_y1.GetValue()
+		return (x0, y0, x1, y1)
+
 	def get_screen_zone(self):
 		x0 = self.screen_d.sz_x0.GetValue()
 		y0 = self.screen_d.sz_y0.GetValue()
@@ -884,6 +958,11 @@ class BotFrame ( wx.Frame ):
 		self.screen_d.ctz_y0.SetValue(0)
 		self.screen_d.ctz_x1.SetValue(0)
 		self.screen_d.ctz_y1.SetValue(0)
+
+		self.screen_d.ct3z_x0.SetValue(0)
+		self.screen_d.ct3z_y0.SetValue(0)
+		self.screen_d.ct3z_x1.SetValue(0)
+		self.screen_d.ct3z_y1.SetValue(0)
 
 		self.screen_d.pz_x0.SetValue(0)
 		self.screen_d.pz_y0.SetValue(0)
@@ -923,9 +1002,11 @@ class BotFrame ( wx.Frame ):
 		self.sleep_time.SetValue(0)
 		self.precision_image.SetValue(0)
 		self.is_click_back.SetValue(False)
+		self.is_find_chest3.SetValue(False)
 
 		self.path_cat_screen.SetPath("")
 		self.path_chest.SetPath("")
+		self.path_chest3.SetPath("")
 		self.path_tree_chest.SetPath("")
 		self.path_check.SetPath("")
 		self.path_end.SetPath("")

@@ -144,6 +144,39 @@ class ScreenDialog ( wx.Dialog ):
 
 		SD_container.Add( chest_block, 1, wx.EXPAND, 5 )
 
+		self.m_staticline18 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		SD_container.Add( self.m_staticline18, 0, wx.EXPAND |wx.ALL, 5 )
+
+		chest_block1 = wx.BoxSizer( wx.HORIZONTAL )
+
+		self.m_staticText1212 = wx.StaticText( self, wx.ID_ANY, u"Зона поиска крылатых сундуков", wx.DefaultPosition, wx.Size( 300,-1 ), 0 )
+		self.m_staticText1212.Wrap( -1 )
+
+		chest_block1.Add( self.m_staticText1212, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
+
+		self.set_chest3_zone = wx.Button( self, wx.ID_ANY, u"SET", wx.DefaultPosition, wx.DefaultSize, 0 )
+		chest_block1.Add( self.set_chest3_zone, 0, wx.ALL|wx.EXPAND, 5 )
+
+		chest3_coord = wx.GridSizer( 2, 2, 0, 0 )
+
+		self.ct3z_x0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		chest3_coord.Add( self.ct3z_x0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.ct3z_y0 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		chest3_coord.Add( self.ct3z_y0, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.ct3z_x1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		chest3_coord.Add( self.ct3z_x1, 0, wx.ALL|wx.EXPAND, 5 )
+
+		self.ct3z_y1 = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		chest3_coord.Add( self.ct3z_y1, 0, wx.ALL|wx.EXPAND, 5 )
+
+
+		chest_block1.Add( chest3_coord, 1, wx.ALIGN_CENTER, 5 )
+
+
+		SD_container.Add( chest_block1, 1, wx.EXPAND, 5 )
+
 		self.m_staticline11 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		SD_container.Add( self.m_staticline11, 0, wx.EXPAND |wx.ALL, 5 )
 
@@ -363,6 +396,7 @@ class ScreenDialog ( wx.Dialog ):
 		self.set_exit_zone.Bind( wx.EVT_BUTTON, self.SetZone_exit )
 		self.clear_exit_zone.Bind( wx.EVT_BUTTON, self.Clear_exit_zone )
 		self.set_chest_zone.Bind( wx.EVT_BUTTON, self.SetZone_chest )
+		self.set_chest3_zone.Bind( wx.EVT_BUTTON, self.SetZone_chest3 )
 		self.set_play_zone.Bind( wx.EVT_BUTTON, self.SetZone_play )
 		self.set_end_zone.Bind( wx.EVT_BUTTON, self.SetZone_end )
 		self.set_check_zone.Bind( wx.EVT_BUTTON, self.SetZone_check )
@@ -416,6 +450,23 @@ class ScreenDialog ( wx.Dialog ):
 			elif self.counter == 1:
 				self.ctz_x1.SetValue(x)
 				self.ctz_y1.SetValue(y)
+				mouse.unhook_all()
+			self.counter += 1
+
+		mouse.on_click(on_click)
+
+
+	def SetZone_chest3( self, event ):
+		self.counter = 0
+
+		def on_click():
+			x, y = mouse.get_position()
+			if self.counter == 0:
+				self.ct3z_x0.SetValue(x)
+				self.ct3z_y0.SetValue(y)
+			elif self.counter == 1:
+				self.ct3z_x1.SetValue(x)
+				self.ct3z_y1.SetValue(y)
 				mouse.unhook_all()
 			self.counter += 1
 
