@@ -43,7 +43,7 @@ def show_error_dialog(message):
     dlg.Destroy()
 
 
-def find_x(x0, y0, x1, y1, radius, wb_lvl, bx=-1, by=-1, click_back=True):
+def find_x(x0, y0, x1, y1, radius, wb_lvl):
     width = x1 - x0
     height = y1 - y0
     # Сделать скриншот указанной области экрана
@@ -80,11 +80,7 @@ def find_x(x0, y0, x1, y1, radius, wb_lvl, bx=-1, by=-1, click_back=True):
                     _e == 0 and _f == 0 and _h == 0
             ):
                 f_click(x0+x, y0+y)
-                time.sleep(4)
                 return True
-    if click_back and bx != -1 and by != -1:
-        f_click(bx, by)
-        time.sleep(4)
     return False
 
 

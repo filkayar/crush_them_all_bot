@@ -66,11 +66,6 @@ class BotFrame ( wx.Frame ):
 
 		setting_values_container.Add( self.m_staticText611, wx.GBPosition( 6, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
-		self.m_staticText6111 = wx.StaticText( self, wx.ID_ANY, u"- Выполнять нажатие кнопки \"назад\" при попытке \nпоиска выхода из рекламы", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText6111.Wrap( -1 )
-
-		setting_values_container.Add( self.m_staticText6111, wx.GBPosition( 7, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
-
 		contour_size = wx.GridSizer( 0, 2, 0, 0 )
 
 		self.contour_size_min = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 50,-1 ), wx.SP_ARROW_KEYS, 0, 1000, 0 )
@@ -100,16 +95,13 @@ class BotFrame ( wx.Frame ):
 		self.sleep_time = wx.SpinCtrl( self, wx.ID_ANY, u"0", wx.DefaultPosition, wx.Size( 110,-1 ), wx.SP_ARROW_KEYS, 0, 100000, 0 )
 		setting_values_container.Add( self.sleep_time, wx.GBPosition( 6, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
-		self.is_click_back = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		setting_values_container.Add( self.is_click_back, wx.GBPosition( 7, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL, 5 )
-
 		self.precision_image = wx.SpinCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 110,-1 ), wx.SP_ARROW_KEYS, 0, 100, 0 )
-		setting_values_container.Add( self.precision_image, wx.GBPosition( 8, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		setting_values_container.Add( self.precision_image, wx.GBPosition( 7, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
 		self.m_staticText61111 = wx.StaticText( self, wx.ID_ANY, u"- Точность сравнения изображений для черного списка (%)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText61111.Wrap( -1 )
 
-		setting_values_container.Add( self.m_staticText61111, wx.GBPosition( 8, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		setting_values_container.Add( self.m_staticText61111, wx.GBPosition( 7, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
 		self.is_find_chest3 = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		setting_values_container.Add( self.is_find_chest3, wx.GBPosition( 9, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL, 5 )
@@ -119,13 +111,21 @@ class BotFrame ( wx.Frame ):
 
 		setting_values_container.Add( self.m_staticText61112, wx.GBPosition( 9, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
-		self.is_use_boost = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		setting_values_container.Add( self.is_use_boost, wx.GBPosition( 10, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL, 5 )
+		self.is_use_blacklist = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		setting_values_container.Add( self.is_use_blacklist, wx.GBPosition( 10, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL, 5 )
 
-		self.m_staticText611121 = wx.StaticText( self, wx.ID_ANY, u"- Использовать бустеры", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText611121 = wx.StaticText( self, wx.ID_ANY, u"- Использовать черный список", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText611121.Wrap( -1 )
 
 		setting_values_container.Add( self.m_staticText611121, wx.GBPosition( 10, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+
+		self.find_close_time = wx.SpinCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 110,-1 ), wx.SP_ARROW_KEYS, 0, 10000, 0 )
+		setting_values_container.Add( self.find_close_time, wx.GBPosition( 8, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+
+		self.m_staticText6111211 = wx.StaticText( self, wx.ID_ANY, u"- Задержка между итерациями цикла поиска выхода", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText6111211.Wrap( -1 )
+
+		setting_values_container.Add( self.m_staticText6111211, wx.GBPosition( 8, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 
 
 		left_container.Add( setting_values_container, 1, wx.SHAPED, 5 )
@@ -277,61 +277,6 @@ class BotFrame ( wx.Frame ):
 
 		right_container.Add( path_center_block1, 1, wx.EXPAND, 5 )
 
-		self.m_staticline161 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		right_container.Add( self.m_staticline161, 0, wx.EXPAND |wx.ALL, 5 )
-
-		path_boost_block1 = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.path_flag_boost = wx.FilePickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
-		path_boost_block1.Add( self.path_flag_boost, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-		self.m_staticText273211 = wx.StaticText( self, wx.ID_ANY, u"Флаг разрешения буста", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText273211.Wrap( -1 )
-
-		path_boost_block1.Add( self.m_staticText273211, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-
-		right_container.Add( path_boost_block1, 1, wx.EXPAND, 5 )
-
-		path_boost_block2 = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.path_get_boost = wx.FilePickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
-		path_boost_block2.Add( self.path_get_boost, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-		self.m_staticText273212 = wx.StaticText( self, wx.ID_ANY, u"Кнопка получения буста", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText273212.Wrap( -1 )
-
-		path_boost_block2.Add( self.m_staticText273212, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-
-		right_container.Add( path_boost_block2, 1, wx.EXPAND, 5 )
-
-		path_boost_block3 = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.path_ok_boost = wx.FilePickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
-		path_boost_block3.Add( self.path_ok_boost, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-		self.m_staticText273213 = wx.StaticText( self, wx.ID_ANY, u"Кнопка подтверждения буста", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText273213.Wrap( -1 )
-
-		path_boost_block3.Add( self.m_staticText273213, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-
-		right_container.Add( path_boost_block3, 1, wx.EXPAND, 5 )
-
-		path_boost_block4 = wx.BoxSizer( wx.HORIZONTAL )
-
-		self.path_end_boost = wx.FilePickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.DefaultSize, wx.FLP_DEFAULT_STYLE )
-		path_boost_block4.Add( self.path_end_boost, 1, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-		self.m_staticText2732131 = wx.StaticText( self, wx.ID_ANY, u"Кнопка закрытия окна бустера", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText2732131.Wrap( -1 )
-
-		path_boost_block4.Add( self.m_staticText2732131, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
-
-
-		right_container.Add( path_boost_block4, 1, wx.EXPAND, 5 )
-
 		self.m_staticline16 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		right_container.Add( self.m_staticline16, 0, wx.EXPAND |wx.ALL, 5 )
 
@@ -452,24 +397,14 @@ class BotFrame ( wx.Frame ):
 		screen_path = self.path_cat_screen.GetPath()
 		center_zone = screen_zone = self.get_screen_zone()
 		center_path = self.path_center.GetPath()
-		click_back = self.is_click_back.GetValue()
 		play_path = self.path_play.GetPath()
 		play_zone =self.get_play_zone()
 		precision_image = self.precision_image.GetValue() / 100
 		chest3_zone = self.get_chest3_zone()
 		chest3_path = self.path_chest3.GetPath()
 		is_find_chest3 = self.is_find_chest3.GetValue()
-
-		is_use_boost = self.is_use_boost.GetValue()
-		path_flag_boost = self.path_flag_boost.GetPath()
-		path_get_boost = self.path_get_boost.GetPath()
-		path_ok_boost = self.path_ok_boost.GetPath()
-		path_end_boost = self.path_end_boost.GetPath()
-		flag_boost_zone = self.get_flag_boost_zone()
-		get_boost_zone = self.get_get_boost_zone()
-		ok_boost_zone = self.get_ok_boost_zone()
-		end_boost_zone = self.get_end_boost_zone()
-
+		is_use_blacklist = self.is_use_blacklist.GetValue()
+		find_close_time = self.find_close_time.GetValue()
 
 		# Начинаем с того что сундук мы еще не нашли, а выход из рекламы как будто бы нашли
 		_found_chest = False
@@ -495,8 +430,8 @@ class BotFrame ( wx.Frame ):
 			if self.Find_Close_loop(
 				menu_path=menu_path, end_path=end_path, end_zone=end_zone, menu_zone=menu_zone,
 				x_rad_min=x_rad_min, x_rad_max=x_rad_max, error_time=error_time, exit_zones=exit_zones, wb_lvl=wb_lvl, bx=bx, by=by,
-				precision=precision, click_back=click_back, screen_path=screen_path, screen_zone=screen_zone,
-				end_boost_zone=end_boost_zone, path_end_boost=path_end_boost
+				precision=precision, screen_path=screen_path, screen_zone=screen_zone, path_center=center_path,
+				center_zone=center_zone, is_use_blacklist=is_use_blacklist, find_close_time=find_close_time
 			):
 				# Варианты попадания сюда:
 				# 1) Вышли в ГО (старт, перезагрузка, окончание рекламы)
@@ -528,9 +463,7 @@ class BotFrame ( wx.Frame ):
 					ad_time=ad_time, menu_path=menu_path, menu_zone=menu_zone, tree_chest_path=tree_chest_path,
 					play_path=play_path, play_zone=play_zone, screen_path=screen_path, screen_zone=screen_zone,
 					precision_image=precision_image, is_find_chest3=is_find_chest3, chest3_path=chest3_path,
-					chest3_zone=chest3_zone, is_use_boost=is_use_boost, path_flag_boost=path_flag_boost,
-					path_get_boost=path_get_boost, path_ok_boost=path_ok_boost, flag_boost_zone=flag_boost_zone,
-					get_boost_zone=get_boost_zone, ok_boost_zone=ok_boost_zone
+					chest3_zone=chest3_zone, is_use_blacklist=is_use_blacklist
 				)
 				if not _found_chest:
 					# Плохой выход может быть в следующих случаях:
@@ -568,39 +501,50 @@ class BotFrame ( wx.Frame ):
 
 
 	def Find_Close_loop(self, menu_path, end_path, end_zone, menu_zone, x_rad_min, x_rad_max, error_time, exit_zones, wb_lvl, bx, by,
-						precision, click_back, screen_path, screen_zone, end_boost_zone, path_end_boost):
+						precision, screen_path, screen_zone, path_center, center_zone, is_use_blacklist, find_close_time):
 		self.set_status("Поиск выхода...")
 
 		_now = time_label()
 		while stopwatch(_now) < error_time and self.running:
+			time.sleep(find_close_time)
+
 			# Проверим на главный экран
 			if find_element(menu_path, *menu_zone, precision=precision, click=False):
 				self.set_status(" Успех!", type=1)
 				return True
 
-			time.sleep(2)
-
-			# Если мы не в главном экране, то ищем выход, next, или жмем "назад" (если включена опция)
-			# Либо реклама могла закончиться сама и тогда ищем кнопку получения награды
-			for exit_zone in exit_zones:
-				for r in range(x_rad_min, x_rad_max, 1):
-					if not self.running:
-						return False
-					find_x(*exit_zone, radius=r, wb_lvl=wb_lvl, bx=bx, by=by, click_back=click_back)
+			# Если по ошибке нажали на выход после попадания в главное окно, жмем "назад"
+			if find_element(path_center, *center_zone, precision=precision, click=False):
+				f_click(self.screen_d.ckz_x0.GetValue(),self.screen_d.ckz_y0.GetValue())
+				time.sleep(1)
+				continue
 
 			# Ищем сбор награды при необходимости
 			find_element(end_path, *end_zone, precision=precision, click=True)
 
-			if self.found_boost:
-				find_element(path_end_boost, *end_boost_zone, precision=precision, click=True)
+			# Если мы не в главном экране, то ищем выход, next, или жмем "назад" (если включена опция)
+			# Либо реклама могла закончиться сама и тогда ищем кнопку получения награды
+			if not self.check_zones(exit_zones, x_rad_min, x_rad_max, wb_lvl):
+				return False
 
 		# Сохраним проблемный экран для последующего анализа возникавших ошибок
 		if stopwatch(_now) >= error_time:
-			_screen_error = save_screenshot("ERROR_SCREEN", screen_path, *screen_zone)
-			self.set_status("Выход не обнаружен! Сохранение проблемного экрана: " + _screen_error, type=1)
+			if is_use_blacklist:
+				_screen_error = save_screenshot("ERROR_SCREEN", screen_path, *screen_zone)
+				self.set_status("Выход не обнаружен! Сохранение проблемного экрана: " + _screen_error, type=1)
+			else:
+				self.set_status("Выход не обнаружен!", type=1)
 
 		return False
 
+	def check_zones(self, exit_zones, x_rad_min, x_rad_max, wb_lvl):
+		for exit_zone in exit_zones:
+			for r in range(x_rad_min, x_rad_max, 1):
+				if not self.running:
+					return False
+				if find_x(*exit_zone, radius=r, wb_lvl=wb_lvl):
+					return True
+		return True
 
 
 	# Цикл должен быть по сути бесконечный, но если долго не будет сундуков, то приложение заснёт, поэтому периодически
@@ -608,8 +552,9 @@ class BotFrame ( wx.Frame ):
 	# либо уходим в перезагрузку если "назад" не помогает.
 	def Find_Chests_loop(self, sleep_time, chest_path, chest_zone, precision, ad_time, menu_path, menu_zone,
 						 tree_chest_path, play_path, play_zone, screen_zone, screen_path, precision_image, is_find_chest3, chest3_path, chest3_zone,
-						 is_use_boost, path_flag_boost, path_get_boost, path_ok_boost, flag_boost_zone, get_boost_zone, ok_boost_zone):
-		self.set_status("Поиск сундуков (з:"+ str(self.count_chest) +" д:" + str(self.count_tree_chest) +" к:" + str(self.count_chest3) + ") ...")
+						 is_use_blacklist):
+		self.update_state()
+		self.set_status("Поиск сундуков...")
 
 		# !!! ИЩЕМ !!!
 		_start_find_chests = _now = time_label()
@@ -634,7 +579,6 @@ class BotFrame ( wx.Frame ):
 					# Индикация аналогична предыдущей, только значение отображаем как +1 на опережение
 					# т.е. на ЧС мы увидим 1 найденный сундук, но и на следующем мы увидим 1
 					self.set_status("\tЗолотой сундук +1 (" + str(self.count_chest + 1) + ")")
-
 				# Нашли золото, нажали - подождали секунду - начинаем искать запуск рекламы
 				_now = time_label()
 				time.sleep(1.5)
@@ -647,6 +591,7 @@ class BotFrame ( wx.Frame ):
 					self.count_tree_chest += 1
 					self.set_status("\tДеревянный сундук +1 (" + str(self.count_tree_chest) + ")" )
 				_now = time_label()
+				self.update_state()
 
 			# Копируем функцию поиска золотого сундука с поправкой, что это опционально
 			if is_find_chest3:
@@ -662,20 +607,6 @@ class BotFrame ( wx.Frame ):
 					_found = find_element(play_path, *play_zone, precision=precision, click=True)
 					time.sleep(3)
 
-			# Добавим опциональный активатор бустера
-			if is_use_boost:
-				if find_element(path_flag_boost, *flag_boost_zone, precision=precision, click=True):
-					_now = time_label()
-					time.sleep(2)
-					if find_element(path_get_boost, *get_boost_zone, precision=precision, click=True):
-						_now = time_label()
-						self.set_status("\tЗапущен ускоритель!")
-						self.found_boost = True
-						time.sleep(1.5)
-						_found = find_element(path_ok_boost, *ok_boost_zone, precision=precision, click=True)
-						time.sleep(3)
-					else:
-						return False
 
 		# Если дошли до сюда - значит нашли золото, в любом другом случае - ушли бы к перезагрузке
 		# Пока индикатор воспроизведения не исчезнет продолжаем кликать по нему
@@ -686,12 +617,13 @@ class BotFrame ( wx.Frame ):
 		# !!! НАШЛИ ЗОЛОТО !!!
 		self.set_status("Просмотр рекламы...")
 		time.sleep(ad_time)
-		self.set_status("Проверка черного списка...")
-		# Чтобы не переходить к поиску выхода в безнадежной ситуации, если мы знаем что эта реклама - дерьмо,
-		# сразу сверимся с "черным списком" рекламы и в случае чего отправимся сразу на перезагрузку.
-		if check_screenshot_match(screen_path, precision_image, *screen_zone, ad_time=ad_time):
-			self.set_status("!!! Обнаружено исключение. Перенаправление на перезапуск !!!...")
-			return False
+		if is_use_blacklist:
+			self.set_status("Проверка черного списка...")
+			# Чтобы не переходить к поиску выхода в безнадежной ситуации, если мы знаем что эта реклама - дерьмо,
+			# сразу сверимся с "черным списком" рекламы и в случае чего отправимся сразу на перезагрузку.
+			if check_screenshot_match(screen_path, precision_image, *screen_zone, ad_time=ad_time):
+				self.set_status("!!! Обнаружено исключение. Перенаправление на перезапуск !!!...")
+				return False
 		return True
 
 
@@ -779,26 +711,6 @@ class BotFrame ( wx.Frame ):
 			config.set("Settings", "ct3z_x1", str(self.screen_d.ct3z_x1.GetValue()))
 			config.set("Settings", "ct3z_y1", str(self.screen_d.ct3z_y1.GetValue()))
 
-			config.set("Settings", "bstz1_x0", str(self.screen_d.bstz1_x0.GetValue()))
-			config.set("Settings", "bstz1_y0", str(self.screen_d.bstz1_y0.GetValue()))
-			config.set("Settings", "bstz1_x1", str(self.screen_d.bstz1_x1.GetValue()))
-			config.set("Settings", "bstz1_y1", str(self.screen_d.bstz1_y1.GetValue()))
-
-			config.set("Settings", "bstz2_x0", str(self.screen_d.bstz2_x0.GetValue()))
-			config.set("Settings", "bstz2_y0", str(self.screen_d.bstz2_y0.GetValue()))
-			config.set("Settings", "bstz2_x1", str(self.screen_d.bstz2_x1.GetValue()))
-			config.set("Settings", "bstz2_y1", str(self.screen_d.bstz2_y1.GetValue()))
-
-			config.set("Settings", "bstz3_x0", str(self.screen_d.bstz3_x0.GetValue()))
-			config.set("Settings", "bstz3_y0", str(self.screen_d.bstz3_y0.GetValue()))
-			config.set("Settings", "bstz3_x1", str(self.screen_d.bstz3_x1.GetValue()))
-			config.set("Settings", "bstz3_y1", str(self.screen_d.bstz3_y1.GetValue()))
-
-			config.set("Settings", "bstz4_x0", str(self.screen_d.bstz4_x0.GetValue()))
-			config.set("Settings", "bstz4_y0", str(self.screen_d.bstz4_y0.GetValue()))
-			config.set("Settings", "bstz4_x1", str(self.screen_d.bstz4_x1.GetValue()))
-			config.set("Settings", "bstz4_y1", str(self.screen_d.bstz4_y1.GetValue()))
-
 			config.set("Settings", "pz_x0", str(self.screen_d.pz_x0.GetValue()))
 			config.set("Settings", "pz_y0", str(self.screen_d.pz_y0.GetValue()))
 			config.set("Settings", "pz_x1", str(self.screen_d.pz_x1.GetValue()))
@@ -834,15 +746,10 @@ class BotFrame ( wx.Frame ):
 			config.set("Settings", "error_time", str(self.error_time.GetValue()))
 			config.set("Settings", "reboot_time", str(self.reboot_time.GetValue()))
 			config.set("Settings", "sleep_time", str(self.sleep_time.GetValue()))
-			config.set("Settings", "is_click_back", "1" if self.is_click_back.GetValue() else "0")
+			config.set("Settings", "find_close_time", str(self.find_close_time.GetValue()))
 			config.set("Settings", "is_find_chest3", "1" if self.is_find_chest3.GetValue() else "0")
 			config.set("Settings", "precision_image", str(self.precision_image.GetValue()))
-
-			config.set("Settings", "is_use_boost", "1" if self.is_use_boost.GetValue() else "0")
-			config.set("Settings", "path_flag_boost", self.path_flag_boost.GetPath())
-			config.set("Settings", "path_get_boost", self.path_get_boost.GetPath())
-			config.set("Settings", "path_ok_boost", self.path_ok_boost.GetPath())
-			config.set("Settings", "path_end_boost", self.path_end_boost.GetPath())
+			config.set("Settings", "is_use_blacklist", "1" if self.is_use_blacklist.GetValue() else "0")
 
 			config.set("Settings", "path_cat_screen", self.path_cat_screen.GetPath())
 			config.set("Settings", "path_chest", self.path_chest.GetPath())
@@ -896,42 +803,6 @@ class BotFrame ( wx.Frame ):
 				self.screen_d.ctz_x1.SetValue(config.getint("Settings", "ctz_x1"))
 			if config.has_option('Settings', 'ctz_y1'):
 				self.screen_d.ctz_y1.SetValue(config.getint("Settings", "ctz_y1"))
-
-			if config.has_option('Settings', 'bstz1_x0'):
-				self.screen_d.bstz1_x0.SetValue(config.getint("Settings", "bstz1_x0"))
-			if config.has_option('Settings', 'bstz1_y0'):
-				self.screen_d.bstz1_y0.SetValue(config.getint("Settings", "bstz1_y0"))
-			if config.has_option('Settings', 'bstz1_x1'):
-				self.screen_d.bstz1_x1.SetValue(config.getint("Settings", "bstz1_x1"))
-			if config.has_option('Settings', 'bstz1_y1'):
-				self.screen_d.bstz1_y1.SetValue(config.getint("Settings", "bstz1_y1"))
-
-			if config.has_option('Settings', 'bstz2_x0'):
-				self.screen_d.bstz2_x0.SetValue(config.getint("Settings", "bstz2_x0"))
-			if config.has_option('Settings', 'bstz2_y0'):
-				self.screen_d.bstz2_y0.SetValue(config.getint("Settings", "bstz2_y0"))
-			if config.has_option('Settings', 'bstz2_x1'):
-				self.screen_d.bstz2_x1.SetValue(config.getint("Settings", "bstz2_x1"))
-			if config.has_option('Settings', 'bstz2_y1'):
-				self.screen_d.bstz2_y1.SetValue(config.getint("Settings", "bstz2_y1"))
-
-			if config.has_option('Settings', 'bstz3_x0'):
-				self.screen_d.bstz3_x0.SetValue(config.getint("Settings", "bstz3_x0"))
-			if config.has_option('Settings', 'bstz3_y0'):
-				self.screen_d.bstz3_y0.SetValue(config.getint("Settings", "bstz3_y0"))
-			if config.has_option('Settings', 'bstz3_x1'):
-				self.screen_d.bstz3_x1.SetValue(config.getint("Settings", "bstz3_x1"))
-			if config.has_option('Settings', 'bstz3_y1'):
-				self.screen_d.bstz3_y1.SetValue(config.getint("Settings", "bstz3_y1"))
-
-			if config.has_option('Settings', 'bstz4_x0'):
-				self.screen_d.bstz4_x0.SetValue(config.getint("Settings", "bstz4_x0"))
-			if config.has_option('Settings', 'bstz4_y0'):
-				self.screen_d.bstz4_y0.SetValue(config.getint("Settings", "bstz4_y0"))
-			if config.has_option('Settings', 'bstz4_x1'):
-				self.screen_d.bstz4_x1.SetValue(config.getint("Settings", "bstz4_x1"))
-			if config.has_option('Settings', 'bstz4_y1'):
-				self.screen_d.bstz4_y1.SetValue(config.getint("Settings", "bstz4_y1"))
 
 			if config.has_option('Settings', 'ct3z_x0'):
 				self.screen_d.ct3z_x0.SetValue(config.getint("Settings", "ct3z_x0"))
@@ -1005,23 +876,14 @@ class BotFrame ( wx.Frame ):
 				self.reboot_time.SetValue(config.getint("Settings", "reboot_time"))
 			if config.has_option('Settings', 'sleep_time'):
 				self.sleep_time.SetValue(config.getint("Settings", "sleep_time"))
+			if config.has_option('Settings', 'find_close_time'):
+				self.find_close_time.SetValue(config.getint("Settings", "find_close_time"))
 			if config.has_option('Settings', 'precision_image'):
 				self.precision_image.SetValue(config.getint("Settings", "precision_image"))
-			if config.has_option('Settings', 'is_click_back'):
-				self.is_click_back.SetValue(True if config.getint("Settings", "is_click_back") == 1 else False)
 			if config.has_option('Settings', 'is_find_chest3'):
 				self.is_find_chest3.SetValue(True if config.getint("Settings", "is_find_chest3") == 1 else False)
-
-			if config.has_option('Settings', 'is_use_boost'):
-				self.is_use_boost.SetValue(True if config.getint("Settings", "is_use_boost") == 1 else False)
-			if config.has_option('Settings', 'path_flag_boost'):
-				self.path_flag_boost.SetPath(config.get("Settings", "path_flag_boost"))
-			if config.has_option('Settings', 'path_get_boost'):
-				self.path_get_boost.SetPath(config.get("Settings", "path_get_boost"))
-			if config.has_option('Settings', 'path_ok_boost'):
-				self.path_ok_boost.SetPath(config.get("Settings", "path_ok_boost"))
-			if config.has_option('Settings', 'path_end_boost'):
-				self.path_end_boost.SetPath(config.get("Settings", "path_end_boost"))
+			if config.has_option('Settings', 'is_use_blacklist'):
+				self.is_use_blacklist.SetValue(True if config.getint("Settings", "is_use_blacklist") == 1 else False)
 
 			if config.has_option('Settings', 'path_cat_screen'):
 				self.path_cat_screen.SetPath(config.get("Settings", "path_cat_screen"))
@@ -1075,34 +937,6 @@ class BotFrame ( wx.Frame ):
 		y0 = self.screen_d.ez_y0.GetValue()
 		x1 = self.screen_d.ez_x1.GetValue()
 		y1 = self.screen_d.ez_y1.GetValue()
-		return (x0, y0, x1, y1)
-
-	def get_flag_boost_zone(self):
-		x0 = self.screen_d.bstz1_x0.GetValue()
-		y0 = self.screen_d.bstz1_y0.GetValue()
-		x1 = self.screen_d.bstz1_x1.GetValue()
-		y1 = self.screen_d.bstz1_y1.GetValue()
-		return (x0, y0, x1, y1)
-
-	def get_get_boost_zone(self):
-		x0 = self.screen_d.bstz2_x0.GetValue()
-		y0 = self.screen_d.bstz2_y0.GetValue()
-		x1 = self.screen_d.bstz2_x1.GetValue()
-		y1 = self.screen_d.bstz2_y1.GetValue()
-		return (x0, y0, x1, y1)
-
-	def get_ok_boost_zone(self):
-		x0 = self.screen_d.bstz3_x0.GetValue()
-		y0 = self.screen_d.bstz3_y0.GetValue()
-		x1 = self.screen_d.bstz3_x1.GetValue()
-		y1 = self.screen_d.bstz3_y1.GetValue()
-		return (x0, y0, x1, y1)
-
-	def get_end_boost_zone(self):
-		x0 = self.screen_d.bstz4_x0.GetValue()
-		y0 = self.screen_d.bstz4_y0.GetValue()
-		x1 = self.screen_d.bstz4_x1.GetValue()
-		y1 = self.screen_d.bstz4_y1.GetValue()
 		return (x0, y0, x1, y1)
 
 	def get_play_zone(self):
@@ -1164,26 +998,6 @@ class BotFrame ( wx.Frame ):
 		self.screen_d.ctz_x1.SetValue(0)
 		self.screen_d.ctz_y1.SetValue(0)
 
-		self.screen_d.bstz1_x0.SetValue(0)
-		self.screen_d.bstz1_y0.SetValue(0)
-		self.screen_d.bstz1_x1.SetValue(0)
-		self.screen_d.bstz1_y1.SetValue(0)
-
-		self.screen_d.bstz2_x0.SetValue(0)
-		self.screen_d.bstz2_y0.SetValue(0)
-		self.screen_d.bstz2_x1.SetValue(0)
-		self.screen_d.bstz2_y1.SetValue(0)
-
-		self.screen_d.bstz3_x0.SetValue(0)
-		self.screen_d.bstz3_y0.SetValue(0)
-		self.screen_d.bstz3_x1.SetValue(0)
-		self.screen_d.bstz3_y1.SetValue(0)
-
-		self.screen_d.bstz4_x0.SetValue(0)
-		self.screen_d.bstz4_y0.SetValue(0)
-		self.screen_d.bstz4_x1.SetValue(0)
-		self.screen_d.bstz4_y1.SetValue(0)
-
 		self.screen_d.ct3z_x0.SetValue(0)
 		self.screen_d.ct3z_y0.SetValue(0)
 		self.screen_d.ct3z_x1.SetValue(0)
@@ -1226,14 +1040,9 @@ class BotFrame ( wx.Frame ):
 		self.reboot_time.SetValue(0)
 		self.sleep_time.SetValue(0)
 		self.precision_image.SetValue(0)
-		self.is_click_back.SetValue(False)
+		self.find_close_time.SetValue(0)
 		self.is_find_chest3.SetValue(False)
-
-		self.is_use_boost.SetValue(False)
-		self.path_flag_boost.SetPath("")
-		self.path_get_boost.SetPath("")
-		self.path_ok_boost.SetPath("")
-		self.path_end_boost.SetPath("")
+		self.is_use_blacklist.SetValue(False)
 
 		self.path_cat_screen.SetPath("")
 		self.path_chest.SetPath("")
@@ -1246,11 +1055,17 @@ class BotFrame ( wx.Frame ):
 
 	def set_status(self, message, type=0):
 		if type == 0:
-			self.statusbar.SetStatusText(message)  # Обновляем текстовое сообщение в статус-баре
-		else:
-			b = self.statusbar.GetStatusText()
-			self.statusbar.SetStatusText(b + message)
+			self.statusbar.SetStatusText(message, 1)
+		if type == 1:
+			b = self.statusbar.GetStatusText(1)
+			self.statusbar.SetStatusText(b + message, 1)
+		if type == 2:
+			self.statusbar.SetStatusText(message, 0)
 
 		_end = "\n" if type == 0 else " "
 		_time = datetime.now().strftime("%H:%M:%S")  + " -: " if type == 0 else ""
 		self.loger.LOG.SetValue(self.loger.LOG.GetValue() + _end  + _time +  message )
+
+	def update_state(self):
+		self.set_status(
+			"з:" + str(self.count_chest) + " д:" + str(self.count_tree_chest) + " к:" + str(self.count_chest3), type=2)
