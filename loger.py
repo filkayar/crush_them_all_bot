@@ -5,6 +5,7 @@ import wx.xrc
 ## Class LogDialog
 ###########################################################################
 
+
 class LogDialog ( wx.Dialog ):
 
 	def __init__( self, parent ):
@@ -18,7 +19,6 @@ class LogDialog ( wx.Dialog ):
 		self.LOG.SetMinSize( wx.Size( 600,400 ) )
 
 		L_sizer.Add( self.LOG, 1, wx.ALL|wx.EXPAND, 5 )
-
 
 		self.SetSizer( L_sizer )
 		self.Layout()

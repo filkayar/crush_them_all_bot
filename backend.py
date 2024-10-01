@@ -18,11 +18,14 @@ def f_click(x, y):
     time.sleep(0.1)
     m.position = (0, 0)
 
+
 def time_label():
     return int(time.time())
 
+
 def stopwatch(x):
     return int(time.time()) - x
+
 
 def find_element(image_path, x0, y0, x1, y1, precision=0.8, click=True):
     width = x1 - x0
@@ -34,6 +37,7 @@ def find_element(image_path, x0, y0, x1, y1, precision=0.8, click=True):
             f_click(x, y)
         return True
     return False
+
 
 def show_error_dialog(message):
     # app = wx.App()
@@ -123,6 +127,7 @@ def check_screenshot_match(cat_screen, precision_image, x0, y0, x1, y1, ad_time)
             if check2image(img1, img2, height, width, precision_image):
                 return True
     return False  # Совпадений не найдено
+
 
 def check2image(img1, img2, height, width, precision_image):
     real_diff = 0  # Подсчитываем общее кол-во несовпадающих пикселей
